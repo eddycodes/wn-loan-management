@@ -1,0 +1,50 @@
+1.0.1:
+    - 'Initialize plugin.'
+1.0.2:
+    - 'Created table impulsetechnologies_loanmanagement_loan_products'
+    - builder_table_create_impulsetechnologies_loanmanagement_loan_products.php
+1.0.3:
+    - 'Created table impulsetechnologies_loanmanagement_loan_applications'
+    - builder_table_create_impulsetechnologies_loanmanagement_loan_applications.php
+1.0.4:
+    - 'Updated table impulsetechnologies_loanmanagement_loan_applications'
+    - builder_table_update_impulsetechnologies_loanmanagement_loan_applications.php
+1.0.5:
+    - 'Updated table impulsetechnologies_loanmanagement_loan_applications'
+    - builder_table_update_impulsetechnologies_loanmanagement_loan_applications_2.php
+1.0.6:
+    - 'Updated table impulsetechnologies_loanmanagement_loan_applications'
+    - builder_table_update_impulsetechnologies_loanmanagement_loan_applications_3.php
+1.0.7:
+    - 'Updated table impulsetechnologies_loanmanagement_loan_applications'
+    - builder_table_update_impulsetechnologies_loanmanagement_loan_applications_4.php
+1.0.8:
+    - 'Updated table impulsetechnologies_loanmanagement_loan_applications'
+    - builder_table_update_impulsetechnologies_loanmanagement_loan_applications_5.php
+1.0.9:
+    - 'Updated table impulsetechnologies_loanmanagement_loan_applications'
+    - builder_table_update_impulsetechnologies_loanmanagement_loan_applications_6.php
+1.0.10:
+    - 'Updated table impulsetechnologies_loanmanagement_loan_products'
+    - builder_table_update_impulsetechnologies_loanmanagement_loan_products.php
+1.0.11:
+    - 'Updated table impulsetechnologies_loanmanagement_loan_applications'
+    - builder_table_update_impulsetechnologies_loanmanagement_loan_applications_7.php
+1.0.12:
+    - 'Created table impulsetechnologies_loanmanagement_loan_purposes'
+    - builder_table_create_impulsetechnologies_loanmanagement_loan_purposes.php
+1.0.13:
+    - 'Updated table impulsetechnologies_loanmanagement_loan_products'
+    - builder_table_update_impulsetechnologies_loanmanagement_loan_products_2.php
+1.0.14:
+    - 'Updated table impulsetechnologies_loanmanagement_loan_applications'
+    - builder_table_update_impulsetechnologies_loanmanagement_loan_applications_8.php
+1.0.15:
+    - 'Updated table impulsetechnologies_loanmanagement_loan_applications'
+    - builder_table_update_impulsetechnologies_loanmanagement_loan_applications_9.php
+1.0.16:
+    - 'Updated table impulsetechnologies_loanmanagement_loan_products'
+    - builder_table_update_impulsetechnologies_loanmanagement_loan_products_3.php
+1.0.17:
+    - 'Updated table impulsetechnologies_loanmanagement_loan_products'
+    - builder_table_update_impulsetechnologies_loanmanagement_loan_products_4.php

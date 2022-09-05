@@ -1,0 +1,46 @@
+fields:
+    name:
+        label: Name
+        span: auto
+        type: text
+    short_name:
+        label: 'Short name'
+        span: auto
+        type: text
+    interest_rate:
+        label: 'Interest rate'
+        span: full
+        type: number
+    description:
+        label: Description
+        size: large
+        span: full
+        type: textarea
+    minimum_amount:
+        label: 'Minimum amount'
+        span: auto
+        type: number
+    maximum_amount:
+        label: 'Maximum amount'
+        span: auto
+        type: number
+    minimum_tenure:
+        label: 'Minimum tenure'
+        span: auto
+        type: number
+    maximum_tenure:
+        label: 'Maximum tenure'
+        span: auto
+        type: number
+    membership_fee:
+        label: 'Membership fee'
+        span: auto
+        type: number
+    processing_fee:
+        label: 'Processing fee'
+        span: auto
+        type: number
+    insurance_charge:
+        label: 'Insurance Charge'
+        span: auto
+        type: text

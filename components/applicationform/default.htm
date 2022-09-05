@@ -1,0 +1,721 @@
+<div id="applicationFormContainer" x-data="data()" x-init="
+    loanAmount = {{ __SELF__.loanAmount }};
+    loanTenure = {{ __SELF__.tenure }};
+    savingsAmount = {{ __SELF__.savingsAmount }};
+    loanProductId = {{ __SELF__.loanProductId }};
+    document.getElementById('loan-product').value = loanProductId;
+    loanProducts = {{ __SELF__.loanProducts }};
+    loanProductsArray = JSON.parse(JSON.stringify(loanProducts));
+    let selectedLoanProduct = loanProductsArray.find((loanProduct) => {
+        return loanProduct.id == loanProductId;
+    });
+
+
+    minimumAmount = parseInt(selectedLoanProduct.minimum_amount);
+    maximumAmount = parseInt(selectedLoanProduct.maximum_amount);
+    maximumTenure = parseInt(selectedLoanProduct.maximum_tenure);
+    minimumTenure = parseInt(selectedLoanProduct.minimum_tenure);
+    interestRate = parseInt(selectedLoanProduct.interest_rate);
+    insuranceCharge = parseInt(selectedLoanProduct.insurance_charge);
+    processingFee = parseInt(selectedLoanProduct.processing_fee);
+    membershipFee = parseInt(selectedLoanProduct.membership_fee);
+    shortName = selectedLoanProduct.short_name;
+    showSavingsSlider = shortName == 'SGL' ? true : false;
+
+         
+    amountSlider = document.getElementById('amountSlider');
+    tenureSlider = document.getElementById('tenureSlider');
+    noUiSlider.create(amountSlider, {
+        start: loanAmount,
+        range: {
+            'min': minimumAmount,
+            'max': maximumAmount
+        },
+        step: 50
+    });
+
+    noUiSlider.create(tenureSlider, {
+        start: loanTenure,
+        range: {
+            'min': minimumTenure,
+            'max': maximumTenure
+        },
+        step: 1
+    });
+
+    
+        savingsSlider = document.getElementById('savingsSlider');
+    
+        noUiSlider.create(savingsSlider, {
+            start: savingsAmount,
+            range: {
+                'min': minimumSavings,
+                'max': maximumSavings
+            },
+            step: 50
+        });
+
+        savingsSlider.noUiSlider.on('update', (values, handle) => {
+            savingsAmount = parseInt(values[handle]);
+
+            if (showSavingsSlider){
+                maxBasedOnSavings = savingsAmount * 3;
+                maximumAmount = maxBasedOnSavings;
+            }
+
+            amountSlider.noUiSlider.updateOptions({
+                range: {
+                    min: minimumAmount,
+                    max: maximumAmount
+                },
+            });
+        });
+
+    
+    amountSlider.noUiSlider.on('update', (values, handle) => {
+        loanAmount = parseInt(values[handle]);
+    });
+
+    tenureSlider.noUiSlider.on('update', (values, handle) => {
+        tenure = parseInt(values[handle]);
+    });
+">
+    <form data-request="onSubmit" data-request-files enctype="multipart/form-data" id="applicationForm">
+        {{ form_token() }}
+        <div class="apply-form">
+            <div id="result"></div>
+            <div class="card">
+                <h5 class="card-header">Loan Details</h5>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="">Which loan product are you interested in?</label>
+                        <select name="loan_product_id" id="loan-product"
+                            :class="{ 'is-invalid': errors.loan_porduct_id }" class="form-control"
+                            @change="onLoanProductChange">
+                            {% for loan in __SELF__.loanProducts %}
+                            <option value="{{ loan.id }}">{{ loan.name }} - (Monthly Interest {{ loan.interest_rate }}
+                                %)
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group" x-show="showSavingsSlider">
+                        <label for="savingsAmount">Total Savings</label>
+                        <input x-model="savingsAmount" @change="updateSavingAmountSlider" type="text"
+                            :class="{ 'is-invalid': errors.savings_amount }" class="form-control" name="savings_amount"
+                            id="savingsAmount" placeholder="Savings Amount">
+                        <template x-if="errors.savings_amount">
+                            <span class="invalid-feedback" role="alert">
+                                <strong x-text="errors.savings_amount"></strong>
+                            </span>
+                        </template>
+                    </div>
+                    <div class="m-3" id="savingsSlider" x-show="showSavingsSlider"></div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="loanAmount">Loan Amount*</label>
+                                <input x-model="loanAmount" @change="updateAmountSlider" type="text"
+                                    :class="{ 'is-invalid': errors.loan_amount }"
+                                    class="form-control {% if errors.first('loan_amount') %} is-invalid {% endif %}"
+                                    name="loan_amount" id="loanAmount" placeholder="Loan Amount">
+                                <template x-if="errors.loan_amount">
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong x-text="errors.loan_amount"></strong>
+                                    </span>
+                                </template>
+                            </div>
+                            <div class="m-3" id="amountSlider"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="tenure">Tenure (Months)*</label>
+                                <input x-model="tenure" @change="updateTenureSlider" type="text"
+                                    :class="{ 'is-invalid': errors.tenure }" class="form-control" name="tenure"
+                                    id="tenure" placeholder="Tenure">
+                                <template x-if="errors.tenure">
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong x-text="errors.tenure"></strong>
+                                    </span>
+                                </template>
+                            </div>
+                            <div class="m-3" id="tenureSlider"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="loanPurpose">Loan Purpose</label>
+                                <select name="loan_purpose_id" id="loanPurpose" class="form-control"
+                                    @change="onLoanPurposeChange">
+                                    {% for loanPurpose in __SELF__.loanPurposes %}
+                                    <option value="{{ loanPurpose.id }}">{{ loanPurpose.name }}</option>
+                                    {% endfor %}
+                                    <option value="">Other</option>
+                                </select>
+                                <input x-show="showOtherLoanInput" type="text" class="form-control my-3 "
+                                    name="other_loan_purpose" id="otherLoanPurpose" placeholder="Other Loan Purpose">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="monthlyInstallment">Monthly Installment</label>
+                                        <h6><strong x-text="emi()"></strong></h6>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="monthlyInstallment">Processing Fee</label>
+                                        <h6><strong x-text="processingFeeAmount()"></strong></h6>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="insurance">Insurance</label>
+                                        <h6><strong x-text="insuranceAmount()"></strong></h6>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="membershipFee">Membership Fee</label>
+                                        <h6><strong x-text="membershipFee.toFixed(2)"></strong></h6>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="monthlyInstallment">Maximum Loan Amount</label>
+                                        <h6><strong x-text="maximumAmount.toFixed(2)"></strong></h6>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="monthlyInstallment">Net Loan Amount</label>
+                                        <h6><strong x-text="netLoanAmount().toFixed(2)"></strong></h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <h5 class="card-header">Personal Details</h5>
+                <div class="card-body">
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="firstName">First Name*</label>
+                                <input type="text" :class="{ 'is-invalid': errors.first_name }"
+                                    class="form-control {% if errors.first('first_name') %} is-invalid {% endif %}"
+                                    name="first_name" id="firstName" placeholder="First Name">
+                                <template x-if="errors.first_name">
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong x-text="errors.first_name"></strong>
+                                    </span>
+                                </template>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="surname">Surname*</label>
+                                <input type="text" :class="{ 'is-invalid': errors.surname }" class="form-control"
+                                    name="surname" id="surname" placeholder="Surname">
+                                <template x-if="errors.surname">
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong x-text="errors.surname"></strong>
+                                    </span>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="nationality">Nationality*</label>
+                                <select name="nationality" id="nationality"
+                                    :class="{ 'is-invalid': errors.nationality }" class="form-control">
+                                    <option value="afghan">Afghan</option>
+                                    <option value="albanian">Albanian</option>
+                                    <option value="algerian">Algerian</option>
+                                    <option value="american">American</option>
+                                    <option value="andorran">Andorran</option>
+                                    <option value="angolan">Angolan</option>
+                                    <option value="antiguans">Antiguans</option>
+                                    <option value="argentinean">Argentinean</option>
+                                    <option value="armenian">Armenian</option>
+                                    <option value="australian">Australian</option>
+                                    <option value="austrian">Austrian</option>
+                                    <option value="azerbaijani">Azerbaijani</option>
+                                    <option value="bahamian">Bahamian</option>
+                                    <option value="bahraini">Bahraini</option>
+                                    <option value="bangladeshi">Bangladeshi</option>
+                                    <option value="barbadian">Barbadian</option>
+                                    <option value="barbudans">Barbudans</option>
+                                    <option value="batswana">Batswana</option>
+                                    <option value="belarusian">Belarusian</option>
+                                    <option value="belgian">Belgian</option>
+                                    <option value="belizean">Belizean</option>
+                                    <option value="beninese">Beninese</option>
+                                    <option value="bhutanese">Bhutanese</option>
+                                    <option value="bolivian">Bolivian</option>
+                                    <option value="bosnian">Bosnian</option>
+                                    <option value="brazilian">Brazilian</option>
+                                    <option value="british">British</option>
+                                    <option value="bruneian">Bruneian</option>
+                                    <option value="bulgarian">Bulgarian</option>
+                                    <option value="burkinabe">Burkinabe</option>
+                                    <option value="burmese">Burmese</option>
+                                    <option value="burundian">Burundian</option>
+                                    <option value="cambodian">Cambodian</option>
+                                    <option value="cameroonian">Cameroonian</option>
+                                    <option value="canadian">Canadian</option>
+                                    <option value="cape verdean">Cape Verdean</option>
+                                    <option value="central african">Central African</option>
+                                    <option value="chadian">Chadian</option>
+                                    <option value="chilean">Chilean</option>
+                                    <option value="chinese">Chinese</option>
+                                    <option value="colombian">Colombian</option>
+                                    <option value="comoran">Comoran</option>
+                                    <option value="congolese">Congolese</option>
+                                    <option value="costa rican">Costa Rican</option>
+                                    <option value="croatian">Croatian</option>
+                                    <option value="cuban">Cuban</option>
+                                    <option value="cypriot">Cypriot</option>
+                                    <option value="czech">Czech</option>
+                                    <option value="danish">Danish</option>
+                                    <option value="djibouti">Djibouti</option>
+                                    <option value="dominican">Dominican</option>
+                                    <option value="dutch">Dutch</option>
+                                    <option value="east timorese">East Timorese</option>
+                                    <option value="ecuadorean">Ecuadorean</option>
+                                    <option value="egyptian">Egyptian</option>
+                                    <option value="emirian">Emirian</option>
+                                    <option value="equatorial guinean">Equatorial Guinean</option>
+                                    <option value="eritrean">Eritrean</option>
+                                    <option value="estonian">Estonian</option>
+                                    <option value="ethiopian">Ethiopian</option>
+                                    <option value="fijian">Fijian</option>
+                                    <option value="filipino">Filipino</option>
+                                    <option value="finnish">Finnish</option>
+                                    <option value="french">French</option>
+                                    <option value="gabonese">Gabonese</option>
+                                    <option value="gambian">Gambian</option>
+                                    <option value="georgian">Georgian</option>
+                                    <option value="german">German</option>
+                                    <option value="ghanaian">Ghanaian</option>
+                                    <option value="greek">Greek</option>
+                                    <option value="grenadian">Grenadian</option>
+                                    <option value="guatemalan">Guatemalan</option>
+                                    <option value="guinea-bissauan">Guinea-Bissauan</option>
+                                    <option value="guinean">Guinean</option>
+                                    <option value="guyanese">Guyanese</option>
+                                    <option value="haitian">Haitian</option>
+                                    <option value="herzegovinian">Herzegovinian</option>
+                                    <option value="honduran">Honduran</option>
+                                    <option value="hungarian">Hungarian</option>
+                                    <option value="icelander">Icelander</option>
+                                    <option value="indian">Indian</option>
+                                    <option value="indonesian">Indonesian</option>
+                                    <option value="iranian">Iranian</option>
+                                    <option value="iraqi">Iraqi</option>
+                                    <option value="irish">Irish</option>
+                                    <option value="israeli">Israeli</option>
+                                    <option value="italian">Italian</option>
+                                    <option value="ivorian">Ivorian</option>
+                                    <option value="jamaican">Jamaican</option>
+                                    <option value="japanese">Japanese</option>
+                                    <option value="jordanian">Jordanian</option>
+                                    <option value="kazakhstani">Kazakhstani</option>
+                                    <option value="kenyan">Kenyan</option>
+                                    <option value="kittian and nevisian">Kittian and Nevisian</option>
+                                    <option value="kuwaiti">Kuwaiti</option>
+                                    <option value="kyrgyz">Kyrgyz</option>
+                                    <option value="laotian">Laotian</option>
+                                    <option value="latvian">Latvian</option>
+                                    <option value="lebanese">Lebanese</option>
+                                    <option value="liberian">Liberian</option>
+                                    <option value="libyan">Libyan</option>
+                                    <option value="liechtensteiner">Liechtensteiner</option>
+                                    <option value="lithuanian">Lithuanian</option>
+                                    <option value="luxembourger">Luxembourger</option>
+                                    <option value="macedonian">Macedonian</option>
+                                    <option value="malagasy">Malagasy</option>
+                                    <option value="malawian">Malawian</option>
+                                    <option value="malaysian">Malaysian</option>
+                                    <option value="maldivan">Maldivan</option>
+                                    <option value="malian">Malian</option>
+                                    <option value="maltese">Maltese</option>
+                                    <option value="marshallese">Marshallese</option>
+                                    <option value="mauritanian">Mauritanian</option>
+                                    <option value="mauritian">Mauritian</option>
+                                    <option value="mexican">Mexican</option>
+                                    <option value="micronesian">Micronesian</option>
+                                    <option value="moldovan">Moldovan</option>
+                                    <option value="monacan">Monacan</option>
+                                    <option value="mongolian">Mongolian</option>
+                                    <option value="moroccan">Moroccan</option>
+                                    <option value="mosotho">Mosotho</option>
+                                    <option value="motswana">Motswana</option>
+                                    <option value="mozambican">Mozambican</option>
+                                    <option value="namibian">Namibian</option>
+                                    <option value="nauruan">Nauruan</option>
+                                    <option value="nepalese">Nepalese</option>
+                                    <option value="new zealander">New Zealander</option>
+                                    <option value="ni-vanuatu">Ni-Vanuatu</option>
+                                    <option value="nicaraguan">Nicaraguan</option>
+                                    <option value="nigerien">Nigerien</option>
+                                    <option value="north korean">North Korean</option>
+                                    <option value="northern irish">Northern Irish</option>
+                                    <option value="norwegian">Norwegian</option>
+                                    <option value="omani">Omani</option>
+                                    <option value="pakistani">Pakistani</option>
+                                    <option value="palauan">Palauan</option>
+                                    <option value="panamanian">Panamanian</option>
+                                    <option value="papua new guinean">Papua New Guinean</option>
+                                    <option value="paraguayan">Paraguayan</option>
+                                    <option value="peruvian">Peruvian</option>
+                                    <option value="polish">Polish</option>
+                                    <option value="portuguese">Portuguese</option>
+                                    <option value="qatari">Qatari</option>
+                                    <option value="romanian">Romanian</option>
+                                    <option value="russian">Russian</option>
+                                    <option value="rwandan">Rwandan</option>
+                                    <option value="saint lucian">Saint Lucian</option>
+                                    <option value="salvadoran">Salvadoran</option>
+                                    <option value="samoan">Samoan</option>
+                                    <option value="san marinese">San Marinese</option>
+                                    <option value="sao tomean">Sao Tomean</option>
+                                    <option value="saudi">Saudi</option>
+                                    <option value="scottish">Scottish</option>
+                                    <option value="senegalese">Senegalese</option>
+                                    <option value="serbian">Serbian</option>
+                                    <option value="seychellois">Seychellois</option>
+                                    <option value="sierra leonean">Sierra Leonean</option>
+                                    <option value="singaporean">Singaporean</option>
+                                    <option value="slovakian">Slovakian</option>
+                                    <option value="slovenian">Slovenian</option>
+                                    <option value="solomon islander">Solomon Islander</option>
+                                    <option value="somali">Somali</option>
+                                    <option value="south african">South African</option>
+                                    <option value="south korean">South Korean</option>
+                                    <option value="spanish">Spanish</option>
+                                    <option value="sri lankan">Sri Lankan</option>
+                                    <option value="sudanese">Sudanese</option>
+                                    <option value="surinamer">Surinamer</option>
+                                    <option value="swazi">Swazi</option>
+                                    <option value="swedish">Swedish</option>
+                                    <option value="swiss">Swiss</option>
+                                    <option value="syrian">Syrian</option>
+                                    <option value="taiwanese">Taiwanese</option>
+                                    <option value="tajik">Tajik</option>
+                                    <option value="tanzanian">Tanzanian</option>
+                                    <option value="thai">Thai</option>
+                                    <option value="togolese">Togolese</option>
+                                    <option value="tongan">Tongan</option>
+                                    <option value="trinidadian or tobagonian">Trinidadian or Tobagonian</option>
+                                    <option value="tunisian">Tunisian</option>
+                                    <option value="turkish">Turkish</option>
+                                    <option value="tuvaluan">Tuvaluan</option>
+                                    <option value="ugandan">Ugandan</option>
+                                    <option value="ukrainian">Ukrainian</option>
+                                    <option value="uruguayan">Uruguayan</option>
+                                    <option value="uzbekistani">Uzbekistani</option>
+                                    <option value="venezuelan">Venezuelan</option>
+                                    <option value="vietnamese">Vietnamese</option>
+                                    <option value="welsh">Welsh</option>
+                                    <option value="yemenite">Yemenite</option>
+                                    <option value="zambian" selected>Zambian</option>
+                                    <option value="zimbabwean">Zimbabwean</option>
+                                </select>
+                                <template x-if="errors.nationality">
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong x-text="errors.nationality"></strong>
+                                    </span>
+                                </template>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="idNumber">ID Number*</label>
+                                <input type="text" :class="{ 'is-invalid': errors.id_number }" class="form-control"
+                                    name="id_number" id="idNumber" placeholder="ID Number">
+                                <template x-if="errors.id_number">
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong x-text="errors.id_number"></strong>
+                                    </span>
+                                </template>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Gender*</label>
+                                <select class="form-control" name="gender" id="gender">
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Prefer not to say">Prefer not to say</option>
+                                </select>
+
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="dateOfBirth">Date of Birth*</label>
+                                <input type="date" :class="{ 'is-invalid': errors.date_of_birth }" class="form-control"
+                                    name="date_of_birth" id="dateOfBirth">
+                                <template x-if="errors.date_of_birth">
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong x-text="errors.date_of_birth"></strong>
+                                    </span>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="professsion">Profession*</label>
+                        <input type="text" :class="{ 'is-invalid': errors.profession }" class="form-control"
+                            name="profession" id="profession" placeholder="Profession">
+                        <template x-if="errors.profession">
+                            <span class="invalid-feedback" role="alert">
+                                <strong x-text="errors.profession"></strong>
+                            </span>
+                        </template>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Employment Status*</label>
+                                <div class="select-box">
+                                    <select :class="{ 'is-invalid': errors.employment_status }" class="form-control"
+                                        name="employment_status">
+                                        <option value="Employed">Employed</option>
+                                        <option value="Unemployed">Unemployed</option>
+                                        <option value="In active business">In active business</option>
+                                    </select>
+                                </div>
+                                <template x-if="errors.employment_status">
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong x-text="errors.employment_status"></strong>
+                                    </span>
+                                </template>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="lengthOfEmploymentStatus">For How Long (months)*</label>
+                                <input type="number" name="employment_period" id="employmentPeriod"
+                                    :class="{ 'is-invalid': errors.employment_period }" class="form-control"
+                                    placeholder="For How Long (months)">
+                                <template x-if="errors.employment_period">
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong x-text="errors.employment_period"></strong>
+                                    </span>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="email">Email*</label>
+                                <input type="email" :class="{ 'is-invalid': errors.email }" class="form-control"
+                                    name="email" id="email" placeholder="Email">
+                                <template x-if="errors.email">
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong x-text="errors.email"></strong>
+                                    </span>
+                                </template>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="mobile">Mobile*</label>
+                                <input type="text" :class="{ 'is-invalid': errors.mobile }" class="form-control"
+                                    name="mobile" id="mobile">
+                                <template x-if="errors.mobile">
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong x-text="errors.mobile"></strong>
+                                    </span>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="propertyNo">Property No*</label>
+                                <input type="text" :class="{ 'is-invalid': errors.property_no }" class="form-control"
+                                    name="property_no" id="propertyNo" placeholder="Property No">
+                                <template x-if="errors.property_no">
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong x-text="errors.property_no"></strong>
+                                    </span>
+                                </template>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="streetName">Street Name*</label>
+                                <input type="text" :class="{ 'is-invalid': errors.street_name }" class="form-control"
+                                    name="street_name" id="streetName" placeholder="Street Name">
+                                <template x-if="errors.street_name">
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong x-text="errors.street_name"></strong>
+                                    </span>
+                                </template>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="residentialArea">Residential Area*</label>
+                                <input type="text" :class="{ 'is-invalid': errors.residential_area }"
+                                    class="form-control" name="residential_area" id="residentialArea"
+                                    placeholder="Residential Area">
+                                <template x-if="errors.residential_area">
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong x-text="errors.residential_area"></strong>
+                                    </span>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="idDocument">ID Document*</label>
+                                <input :class="{ 'is-invalid': errors.id_document }" class="form-control file"
+                                    type="file" name="id_document" id="idDocument">
+                                <template x-if="errors.id_document">
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong x-text="errors.id_document"></strong>
+                                    </span>
+                                </template>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="proofOfResidence">Proof of Residence</label>
+                                <input :class="{ 'is-invalid': errors.proof_of_residence }" class="form-control file"
+                                    type="file" name="proof_of_residence" id="proofOfResidence">
+                                <template x-if="errors.proof_of_residence">
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong x-text="errors.proof_of_residence"></strong>
+                                    </span>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="nameOfGurantor">Name of Guarantor*</label>
+                                <input type="text" :class="{ 'is-invalid': errors.guarantor_name }" class="form-control"
+                                    name="guarantor_name" id="guarantorName" placeholder="Name of Guarantor">
+                                <template x-if="errors.guarantor_name">
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong x-text="errors.guarantor_name"></strong>
+                                    </span>
+                                </template>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="guarantorsCustomerNo">Guarantors Customer No*</label>
+                                <input type="text" :class="{ 'is-invalid': errors.guarantor_customer_no }"
+                                    class="form-control" name="guarantor_customer_no" id="guarantorsCustomerNo"
+                                    placeholder="Guarantors Customer No">
+                                <template x-if="errors.guarantor_customer_no">
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong x-text="errors.guarantor_customer_no"></strong>
+                                    </span>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="nextOfKinName">Next of Kin Name*</label>
+                                <input type="text" :class="{ 'is-invalid': errors.next_of_kin_name }"
+                                    class="form-control" name="next_of_kin_name" id="nextOfKinName"
+                                    placeholder="Next of Kin Name">
+                                <template x-if="errors.next_of_kin_name">
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong x-text="errors.next_of_kin_name"></strong>
+                                    </span>
+                                </template>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="nextOfKinNRC">Next of Kin NRC</label>
+                                <input type="text" :class="{ 'is-invalid': errors.next_of_kin_nrc }"
+                                    class="form-control" name="next_of_kin_nrc" id="nextOfKinNRC"
+                                    placeholder="Next of Kin NRC">
+                                <template x-if="errors.next_of_kin_nrc">
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong x-text="errors.next_of_kin_nrc"></strong>
+                                    </span>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="nextOfKinEmail">Next of Kin Email</label>
+                                <input type="text" :class="{ 'is-invalid': errors.next_of_kin_email }"
+                                    class="form-control" name="next_of_kin_email" id="nextOfKinEmail"
+                                    placeholder="Next of Kin Email">
+                                <template x-if="errors.next_of_kin_email">
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong x-text="errors.next_of_kin_email"></strong>
+                                    </span>
+                                </template>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="nextOfKinMobile">Next of Kin Mobile*</label>
+                                <input type="text" :class="{ 'is-invalid': errors.next_of_kin_mobile }"
+                                    class="form-control" name="next_of_kin_mobile" id="nextOfKinMobile">
+                                <template x-if="errors.next_of_kin_mobile">
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong x-text="errors.next_of_kin_mobile"></strong>
+                                    </span>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="nextOfKinRelationship">Relationship to Next of Kin*</label>
+                        <input type="text" :class="{ 'is-invalid': errors.relationship_to_next_of_kin }"
+                            class="form-control" name="relationship_to_next_of_kin" id="relationshipToNextOfKin"
+                            placeholder="Relationship to Next of Kin">
+                        <template x-if="errors.relationship_to_next_of_kin">
+                            <span class="invalid-feedback" role="alert">
+                                <strong x-text="errors.relationship_to_next_of_kin"></strong>
+                            </span>
+                        </template>
+                    </div>
+                </div>
+            </div>
+            <div class="apply-btn text-center mt-3">
+                <button type="submit" class="default-btn">
+                    Apply now
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </form>
+</div>

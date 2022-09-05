@@ -1,0 +1,10 @@
+name: LoanProducts
+form: $/impulsetechnologies/loanmanagement/models/loanproduct/fields.yaml
+modelClass: ImpulseTechnologies\LoanManagement\Models\LoanProduct
+defaultRedirect: impulsetechnologies/loanmanagement/loanproducts
+create:
+    redirect: 'impulsetechnologies/loanmanagement/loanproducts/update/:id'
+    redirectClose: impulsetechnologies/loanmanagement/loanproducts
+update:
+    redirect: impulsetechnologies/loanmanagement/loanproducts
+    redirectClose: impulsetechnologies/loanmanagement/loanproducts

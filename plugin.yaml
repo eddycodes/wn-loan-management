@@ -1,0 +1,24 @@
+plugin:
+    name: 'impulsetechnologies.loanmanagement::lang.plugin.name'
+    description: 'impulsetechnologies.loanmanagement::lang.plugin.description'
+    author: 'Impulse Technologies'
+    icon: oc-icon-money
+    homepage: ''
+navigation:
+    main-menu-item:
+        label: 'Loan Management'
+        url: impulsetechnologies/loanmanagement/loanproducts
+        icon: icon-bank
+        sideMenu:
+            side-menu-item:
+                label: 'Loan Products'
+                url: impulsetechnologies/loanmanagement/loanproducts
+                icon: icon-money
+            side-menu-item2:
+                label: 'Loan Applications'
+                url: impulsetechnologies/loanmanagement/loanapplications
+                icon: icon-envelope-o
+            side-menu-item3:
+                label: 'Loan Purposes'
+                url: impulsetechnologies/loanmanagement/loanpurposes
+                icon: icon-thumb-tack

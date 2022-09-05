@@ -1,0 +1,12 @@
+list: $/impulsetechnologies/loanmanagement/models/loanapplication/columns.yaml
+modelClass: ImpulseTechnologies\LoanManagement\Models\LoanApplication
+title: LoanApplications
+noRecordsMessage: 'backend::lang.list.no_records'
+showSetup: true
+showCheckboxes: true
+recordsPerPage: 20
+toolbar:
+    buttons: list_toolbar
+    search:
+        prompt: 'backend::lang.list.search_prompt'
+recordUrl: 'impulsetechnologies/loanmanagement/loanapplications/update/:id'

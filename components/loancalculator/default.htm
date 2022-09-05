@@ -1,0 +1,170 @@
+<div class="apply-form mt-5" x-data="calcData()" x-init="
+    loanProducts = {{__SELF__.loanProducts }};
+    minimumAmount = parseInt(loanProducts[0].minimum_amount);
+    maximumAmount = parseInt(loanProducts[0].maximum_amount);
+    maximumTenure = parseInt(loanProducts[0].maximum_tenure);
+    minimumTenure = parseInt(loanProducts[0].minimum_tenure);
+    interestRate = parseInt(loanProducts[0].interest_rate);
+    insuranceCharge = parseInt(loanProducts[0].insurance_charge);
+    processingFee = parseInt(loanProducts[0].processing_fee);
+    membershipFee = parseInt(loanProducts[0].membership_fee);
+    shortName = loanProducts[0].short_name;
+    amountSlider = document.getElementById('amountSlider');
+    tenureSlider = document.getElementById('tenureSlider');
+    showSavingsSlider = shortName == 'SGL' ? true : false;
+
+    noUiSlider.create(amountSlider, {
+        start: minimumAmount,
+        range: {
+            'min': minimumAmount,
+            'max': maximumAmount
+        },
+        step: 50
+    });
+
+    noUiSlider.create(tenureSlider, {
+        start: minimumTenure,
+        range: {
+            'min': minimumTenure,
+            'max': maximumTenure
+        },
+        step: 1
+    });
+
+    savingsSlider = document.getElementById('savingsSlider');
+
+    noUiSlider.create(savingsSlider, {
+    start: minimumSavings,
+    range: {
+        'min': minimumSavings,
+        'max': maximumSavings
+        },
+        step: 50
+    });
+
+    savingsSlider.noUiSlider.on('update', (values, handle) => {
+        savingsAmount = parseInt(values[handle]);
+        if (showSavingsSlider){
+            maxBasedOnSavings = savingsAmount * 3;
+            maximumAmount = maxBasedOnSavings;
+        }
+        
+        amountSlider.noUiSlider.updateOptions({
+            range: {
+                min: minimumAmount,
+                max: maximumAmount
+            },
+        });
+    });
+
+    amountSlider.noUiSlider.on('update', (values, handle) => {
+        loanAmount = parseInt(values[handle]);
+    });
+
+    tenureSlider.noUiSlider.on('update', (values, handle) => {
+        tenure = parseInt(values[handle]);
+    });
+">
+    <form data-request="onSubmit">
+        {{ form_token() }}
+        <div class="card">
+            <h5 class="card-header p-3 text-center">Apply Now</h5>
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="">Which loan product are you interested in?</label>
+                    <select name="loan_product_id" id="loan-product" :class="{ 'is-invalid': errors.loan_porduct_id }"
+                        class="form-control" @change="onLoanProductChange">
+                        {% for loan in __SELF__.loanProducts %}
+                        <option value="{{ loan.id }}">{{ loan.name }} - (Monthly Interest {{ loan.interest_rate }} %)
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group" x-show="showSavingsSlider">
+                    <label for="savingsAmount">Total Savings</label>
+                    <input x-model="savingsAmount" @change="updateSavingAmountSlider" type="text"
+                        :class="{ 'is-invalid': errors.savings_amount }" class="form-control" name="savings_amount"
+                        id="savingsAmount" placeholder="Savings Amount">
+                    <template x-if="errors.savings_amount">
+                        <span class="invalid-feedback" role="alert">
+                            <strong x-text="errors.savings_amount"></strong>
+                        </span>
+                    </template>
+                </div>
+                <div class="m-3" id="savingsSlider" x-show="showSavingsSlider"></div>
+                <div class="form-group">
+                    <label for="loanAmount">Loan Amount*</label>
+                    <input x-model="loanAmount" @change="updateAmountSlider" type="text"
+                        :class="{ 'is-invalid': errors.loan_amount }" class="form-control" name="loan_amount"
+                        id="loanAmount" placeholder="Loan Amount">
+                    <template x-if="errors.loan_amount">
+                        <span class="invalid-feedback" role="alert">
+                            <strong x-text="errors.loan_amount"></strong>
+                        </span>
+                    </template>
+                </div>
+                <div class="m-3" id="amountSlider"></div>
+                <div class="form-group">
+                    <label for="tenure">Tenure (Months)*</label>
+                    <input x-model="tenure" @change="updateTenureSlider" type="text"
+                        :class="{ 'is-invalid': errors.tenure }" class="form-control" name="tenure" id="tenure"
+                        placeholder="Tenure">
+                    <template x-if="errors.tenure">
+                        <span class="invalid-feedback" role="alert">
+                            <strong x-text="errors.tenure"></strong>
+                        </span>
+                    </template>
+                </div>
+                <div class="m-3" id="tenureSlider"></div>
+
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="monthlyInstallment">Monthly Installment</label>
+                            <h6><strong x-text="emi()"></strong></h6>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="monthlyInstallment">Processing Fee</label>
+                            <h6><strong x-text="processingFeeAmount()"></strong></h6>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="insurance">Insurance</label>
+                            <h6><strong x-text="insuranceAmount()"></strong></h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="membershipFee">Membership Fee</label>
+                            <h6><strong x-text="membershipFee.toFixed(2)"></strong></h6>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="monthlyInstallment">Maximum Loan Amount</label>
+                            <h6><strong x-text="maximumAmount.toFixed(2)"></strong></h6>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="monthlyInstallment">Net Loan Amount</label>
+                            <h6><strong x-text="netLoanAmount().toFixed(2)"></strong></h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="apply-btn text-center mt-3">
+                    <button type="submit" class="default-btn">
+                        Apply now
+                        <span></span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </form>
+</div>

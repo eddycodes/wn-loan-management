@@ -1,0 +1,131 @@
+fields:
+    loan_amount:
+        label: 'Loan Amount'
+        span: auto
+        type: number
+    loanProduct:
+        label: 'Loan Product'
+        nameFrom: name
+        descriptionFrom: description
+        span: auto
+        type: relation
+    loanPurpose:
+        label: 'Loan Purpose'
+        nameFrom: name
+        descriptionFrom: description
+        span: left
+        type: relation
+    other_loan_purpose:
+        label: 'Other Loan Purpose'
+        span: auto
+        type: text
+    first_name:
+        label: 'First name'
+        span: auto
+        type: text
+    surname:
+        label: Surname
+        span: auto
+        type: text
+    nationality:
+        label: Nationality
+        span: auto
+        type: text
+    id_number:
+        label: 'Id number'
+        span: auto
+        type: text
+    gender:
+        label: Gender
+        span: auto
+        type: text
+    date_of_birth:
+        label: 'Date of birth'
+        span: auto
+        type: datepicker
+    profession:
+        label: Profession
+        span: auto
+        type: text
+    employment_status:
+        label: 'Employment status'
+        span: auto
+        type: text
+    employment_period:
+        label: 'Employment period'
+        span: auto
+        type: number
+    email:
+        label: Email
+        span: auto
+        type: text
+    mobile:
+        label: Mobile
+        span: auto
+        type: text
+    property_no:
+        label: 'Property no'
+        span: auto
+        type: text
+    street_name:
+        label: 'Street name'
+        span: auto
+        type: text
+    residential_area:
+        label: 'Residential area'
+        span: auto
+        type: text
+    guarantor_name:
+        label: 'Guarantor name'
+        span: auto
+        type: text
+    guarantor_customer_no:
+        label: 'Guarantor customer no'
+        span: auto
+        type: text
+    next_of_kin_email:
+        label: 'Next of kin email'
+        span: auto
+        type: text
+    next_of_kin_mobile:
+        label: 'Next of kin mobile'
+        span: auto
+        type: text
+    relationship_to_next_of_kin:
+        label: 'Relationship to next of kin'
+        span: auto
+        type: text
+    next_of_kin_name:
+        label: 'Next of kin name'
+        span: auto
+        type: text
+    next_of_kin_nrc:
+        label: 'Next of kin nrc'
+        span: auto
+        type: text
+    id_document:
+        label: 'ID Document'
+        mode: file
+        useCaption: true
+        thumbOptions:
+            mode: crop
+            extension: auto
+        span: auto
+        type: fileupload
+    proof_of_residence:
+        label: 'Proof of Residence'
+        mode: file
+        useCaption: true
+        thumbOptions:
+            mode: crop
+            extension: auto
+        span: auto
+        type: fileupload
+    created_at:
+        label: 'Created at'
+        span: auto
+        type: datepicker
+    updated_at:
+        label: 'Updated at'
+        span: auto
+        type: datepicker

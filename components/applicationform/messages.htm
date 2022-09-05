@@ -1,0 +1,29 @@
+<div class="alert alert-{{ type }}" role="alert">
+    <h4>{{ title }}</h4>
+    {% if errors.count %}
+    <ul>
+        {% for message in errors.all() %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% if content %}
+    <p>{{ content }}</p>
+    {% endif %}
+</div>
+
+
+<script>
+        var errors = {{ errors | json_encode() | raw }};
+        var type = '{{ type }}';
+
+        if(type == 'success') {
+            document.getElementById("applicationForm").reset();
+        }
+
+        document.getElementById('applicationFormContainer').__x.$data.errors = errors;
+  
+        $('html, body').animate({
+            scrollTop: $(".apply-area").offset().top
+        }, '2000');
+</script>

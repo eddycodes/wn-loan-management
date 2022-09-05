@@ -1,0 +1,10 @@
+name: LoanPurposes
+form: $/impulsetechnologies/loanmanagement/models/loanpurpose/fields.yaml
+modelClass: ImpulseTechnologies\LoanManagement\Models\LoanPurpose
+defaultRedirect: impulsetechnologies/loanmanagement/loanpurposes
+create:
+    redirect: 'impulsetechnologies/loanmanagement/loanpurposes/update/:id'
+    redirectClose: impulsetechnologies/loanmanagement/loanpurposes
+update:
+    redirect: impulsetechnologies/loanmanagement/loanpurposes
+    redirectClose: impulsetechnologies/loanmanagement/loanpurposes
