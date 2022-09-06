@@ -21,7 +21,7 @@ class ApplicationForm extends ComponentBase
     public $tenure;
     public $loanProductId;
     public $savingsAmount;
-    
+
 
     public function componentDetails()
     {
@@ -38,7 +38,7 @@ class ApplicationForm extends ComponentBase
         $this->loanAmount = Session::get('loan_amount',750);
         $this->tenure = Session::get('tenure',1);
         $this->loanProductId = Session::get('loan_product_id',LoanProduct::pluck('id')->first());
-        $this->savingsAmount = Session::get('savings_amount',750);        
+        $this->savingsAmount = Session::get('savings_amount',750);
         $this->addJs('assets/js/nouislider.js');
         $this->addCss('assets/css/nouislider.css');
         $this->addJs('assets/js/applicationform.js');
@@ -102,7 +102,7 @@ class ApplicationForm extends ComponentBase
             $loanApplication = new LoanApplication;
             $loanApplication->loan_amount = Input::get('loan_amount');
             $loanApplication->tenure = Input::get('tenure');
-            $loanApplication->interest_rate = $loanProduct->interest_rate;      
+            $loanApplication->interest_rate = $loanProduct->interest_rate;
             $loanApplication->first_name = Input::get('first_name');
             $loanApplication->surname = Input::get('surname');
             $loanApplication->nationality = Input::get('nationality');
@@ -126,7 +126,7 @@ class ApplicationForm extends ComponentBase
             $loanApplication->relationship_to_next_of_kin = Input::get('relationship_to_next_of_kin');
             $loanApplication->loan_product_id = Input::get('loan_product_id') == NULL ? NULL : Input::get('loan_product_id');
             $loanApplication->id_document = Input::file('id_document');
-            $loanApplication->other_loan_purpose = Input::get('other_loan_purpose');   
+            $loanApplication->other_loan_purpose = Input::get('other_loan_purpose');
             $loanApplication->loan_purpose_id = empty(Input::get('loan_purpose_id')) ? NULL : Input::get('loan_purpose_id');
             $loanApplication->proof_of_residence = Input::file('proof_of_residence');
             $loanApplication->save();
@@ -165,13 +165,15 @@ class ApplicationForm extends ComponentBase
             ];
 
             Mail::send('impulsetechnologies.loanmanagement::mail.new-application', $data, function ($message) use ($loanApplication) {
-                $message->to('sandrakambikambi@gmail.com', 'Sandra Kambikambi');
+                $message->to($this->property('notificationEmailAddress'), $this->property('notificationEmailName'))
+                ->subject('New Loan Application');
                 $message->attach($loanApplication->id_document->getLocalPath(), ['as' => $loanApplication->id_document->getFilename()]);
                 $message->attach($loanApplication->proof_of_residence->getLocalPath(), ['as' => $loanApplication->proof_of_residence->getFilename()]);
             });
 
             Mail::send('impulsetechnologies.loanmanagement::mail.application-notification', $data, function ($message) use ($loanApplication) {
-                $message->to($loanApplication->email, $loanApplication->first_name . ' ' . $loanApplication->surname);
+                $message->to($loanApplication->email, $loanApplication->first_name . ' ' . $loanApplication->surname)
+                ->subject('Loan Application Received');;
                 $message->attach($loanApplication->id_document->getLocalPath(), ['as' => $loanApplication->id_document->getFilename()]);
                 $message->attach($loanApplication->proof_of_residence->getLocalPath(), ['as' => $loanApplication->proof_of_residence->getFilename()]);
             });
@@ -181,9 +183,29 @@ class ApplicationForm extends ComponentBase
                 'type' => 'success',
                 'title' => 'Loan application submitted!',
                 'content' => 'Your loan application has been submitted'
-            ])];        
+            ])];
         }
     }
 
-
+    public function defineProperties()
+    {
+        return [
+            'notificationEmailAddress' => [
+                'title' => 'Notification Email Address',
+                'description' => 'Notification Email Address',
+                'type' => 'string',
+                'default' => 'info@lendingscape.co.zm',
+                'required' => true,
+                'validationMessage' => 'Enter Notification Email Address'
+            ],
+            'notificationEmailName' => [
+                'title' => 'Notification Email Name',
+                'description' => 'Notification Email Name',
+                'type' => 'string',
+                'default' => 'LendingScape',
+                'required' => true,
+                'validationMessage' => 'Enter Notification Email Name'
+            ]
+        ];
+    }
 }

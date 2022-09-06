@@ -14,7 +14,7 @@ use Session;
 class LoanCalculator extends ComponentBase
 {
     public $loanProducts;
-    
+
     public function componentDetails()
     {
         return [
@@ -29,7 +29,7 @@ class LoanCalculator extends ComponentBase
         $this->addJs('assets/js/nouislider.js');
         $this->addCss('assets/css/nouislider.css');
         $this->addJs('assets/js/loancalculator.js');
-        
+
     }
 
     protected function loadLoanProducts()
@@ -52,15 +52,27 @@ class LoanCalculator extends ComponentBase
 
         if ($validator->fails()) {
 
-    
+
         } else {
             Session::put('loan_amount', Input::get('loan_amount'));
-            Session::put('tenure', Input::get('tenure'));      
+            Session::put('tenure', Input::get('tenure'));
             Session::put('loan_product_id', Input::get('loan_product_id'));
             Session::put('savings_amount', Input::get('savings_amount'));
-            return Redirect::to('/apply');
+            return Redirect::to($this->property('redirectUrl'));
         }
     }
 
-
+    public function defineProperties()
+    {
+        return [
+            'redirectUrl' => [
+                'title' => 'Redirect URL',
+                'description' => 'Redirect URL',
+                'type' => 'string',
+                'default' => 'apply',
+                'required' => true,
+                'validationMessage' => 'Enter the redirect URL'
+            ]
+        ];
+    }
 }

@@ -14,16 +14,20 @@
 
 
 <script>
-        var errors = {{ errors | json_encode() | raw }};
-        var type = '{{ type }}';
+    var errors = {{ errors | json_encode() | raw }};
+    var type = '{{ type }}';
 
-        if(type == 'success') {
-            document.getElementById("applicationForm").reset();
-        }
+    if (type == 'success') {
+        document.getElementById("applicationForm").reset();
+    }
 
-        document.getElementById('applicationFormContainer').__x.$data.errors = errors;
-  
-        $('html, body').animate({
-            scrollTop: $(".apply-area").offset().top
-        }, '2000');
+    document.addEventListener('alpine:init', () => {
+        Alpine.store('errors', {
+            errors: errors,
+        });
+    });
+
+    $('html, body').animate({
+        scrollTop: $(".apply-area").offset().top
+    }, '2000');
 </script>
