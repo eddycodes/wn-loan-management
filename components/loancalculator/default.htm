@@ -1,5 +1,6 @@
-<div class="apply-form mt-5" x-data="calcData()" x-init="
+<div class="apply-form mt-5" x-data="data()" x-init="
     loanProducts = {{__SELF__.loanProducts }};
+    console.log(loanProducts);
     minimumAmount = parseInt(loanProducts[0].minimum_amount);
     maximumAmount = parseInt(loanProducts[0].maximum_amount);
     maximumTenure = parseInt(loanProducts[0].maximum_tenure);
@@ -11,7 +12,14 @@
     shortName = loanProducts[0].short_name;
     amountSlider = document.getElementById('amountSlider');
     tenureSlider = document.getElementById('tenureSlider');
-    showSavingsSlider = shortName == 'SGL' ? true : false;
+    maximumAmountSavingsMultiplier = loanProducts[0].maximum_amount_savings_multiplier;
+    showSavingsSlider = loanProducts[0].depends_on_savings === 1 ? true : false;
+    if (loanProducts[0].minimum_savings !== null && showSavingsSlider) {
+        minimumSavings = parseFloat(loanProducts[0].minimum_savings);
+    }
+    if (loanProducts[0].maximumSavings !== null && showSavingsSlider) {
+        maximumSavings = parseFloat(loanProducts[0].maximum_savings);
+    }
 
     noUiSlider.create(amountSlider, {
         start: minimumAmount,
@@ -45,10 +53,10 @@
     savingsSlider.noUiSlider.on('update', (values, handle) => {
         savingsAmount = parseInt(values[handle]);
         if (showSavingsSlider){
-            maxBasedOnSavings = savingsAmount * 3;
+            maxBasedOnSavings = savingsAmount * maximumAmountSavingsMultiplier;
             maximumAmount = maxBasedOnSavings;
         }
-        
+
         amountSlider.noUiSlider.updateOptions({
             range: {
                 min: minimumAmount,

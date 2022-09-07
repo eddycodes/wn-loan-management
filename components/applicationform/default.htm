@@ -19,10 +19,15 @@
     insuranceCharge = parseInt(selectedLoanProduct.insurance_charge);
     processingFee = parseInt(selectedLoanProduct.processing_fee);
     membershipFee = parseInt(selectedLoanProduct.membership_fee);
-    shortName = selectedLoanProduct.short_name;
-    showSavingsSlider = shortName == 'SGL' ? true : false;
+    maximumAmountSavingsMultiplier = selectedLoanProduct.maximum_amount_savings_multiplier;
+    showSavingsSlider = selectedLoanProduct.depends_on_savings === 1 ? true : false;
+    if (selectedLoanProduct.minimum_savings !== null && showSavingsSlider) {
+        minimumSavings = parseFloat(selectedLoanProduct.minimum_savings);
+    }
+    if (selectedLoanProduct.maximumSavings !== null && showSavingsSlider) {
+        maximumSavings = parseFloat(selectedLoanProduct.maximum_savings);
+    }
 
-         
     amountSlider = document.getElementById('amountSlider');
     tenureSlider = document.getElementById('tenureSlider');
     noUiSlider.create(amountSlider, {
@@ -43,9 +48,9 @@
         step: 1
     });
 
-    
+
         savingsSlider = document.getElementById('savingsSlider');
-    
+
         noUiSlider.create(savingsSlider, {
             start: savingsAmount,
             range: {
@@ -59,7 +64,7 @@
             savingsAmount = parseInt(values[handle]);
 
             if (showSavingsSlider){
-                maxBasedOnSavings = savingsAmount * 3;
+                maxBasedOnSavings = savingsAmount * maximumAmountSavingsMultiplier;
                 maximumAmount = maxBasedOnSavings;
             }
 
@@ -71,7 +76,7 @@
             });
         });
 
-    
+
     amountSlider.noUiSlider.on('update', (values, handle) => {
         loanAmount = parseInt(values[handle]);
     });

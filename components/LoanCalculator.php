@@ -28,7 +28,7 @@ class LoanCalculator extends ComponentBase
         $this->loanProducts = $this->loadLoanProducts();
         $this->addJs('assets/js/nouislider.js');
         $this->addCss('assets/css/nouislider.css');
-        $this->addJs('assets/js/loancalculator.js');
+        $this->addJs('assets/js/applicationform.js');
 
     }
 

@@ -44,3 +44,26 @@ fields:
         label: 'Insurance Charge'
         span: auto
         type: text
+    depends_on_savings:
+        label: 'Depends on Savings'
+        span: auto
+        default: 0
+        type: checkbox
+    maximum_amount_savings_multiplier:
+        label: 'Maximum Loan Amount based on Savings (Multiplier):'
+        span: full
+        disabled: 0
+        hidden: 0
+        type: number
+    minimum_savings:
+        label: 'Minimum Savings'
+        span: auto
+        disabled: 0
+        hidden: 0
+        type: number
+    maximum_savings:
+        label: 'Maximum Savings'
+        span: auto
+        disabled: 0
+        hidden: 0
+        type: number

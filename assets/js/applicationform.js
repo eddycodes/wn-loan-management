@@ -22,8 +22,9 @@ function data() {
         savingsSlider: null,
         showSavingsSlider: false,
         savingsAmount: null,
-        minimumSavings: 750,
+        minimumSavings: 100,
         maximumSavings: 5000,
+        maximumAmountSavingsMultiplier: 0,
         updateAmountSlider: function () {
             this.amountSlider.noUiSlider.set(this.loanAmount);
         },
@@ -53,8 +54,14 @@ function data() {
             this.insuranceCharge = parseInt(selectedLoanProduct.insurance_charge);
             this.processingFee = parseInt(selectedLoanProduct.processing_fee);
             this.membershipFee = parseInt(selectedLoanProduct.membership_fee);
-            shortName = selectedLoanProduct.short_name;
-            this.showSavingsSlider = shortName == 'SGL' ? true : false;
+            this.maximumAmountSavingsMultiplier = selectedLoanProduct.maximum_amount_savings_multiplier;
+            this.showSavingsSlider = selectedLoanProduct.depends_on_savings === 1 ? true : false;
+            if (selectedLoanProduct.minimum_savings !== null && this.showSavingsSlider) {
+                this.minimumSavings = parseFloat(selectedLoanProduct.minimum_savings);
+            }
+            if (selectedLoanProduct.maximumSavings !== null && this.showSavingsSlider) {
+                this.maximumSavings = parseFloat(selectedLoanProduct.maximum_savings);
+            }
 
             if (this.showSavingsSlider) {
                 maxBasedOnSavings = this.savingsAmount * 3;
@@ -75,6 +82,12 @@ function data() {
                 },
             });
 
+            this.savingsSlider.noUiSlider.updateOptions({
+                range: {
+                    min: this.minimumSavings,
+                    max: this.maximumSavings
+                },
+            });
         },
         emi() {
             let decimalInterest = this.interestRate / 100;

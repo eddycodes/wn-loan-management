@@ -25,6 +25,7 @@ function calcData()  {
         savingsAmount: null,
         minimumSavings: 750,
         maximumSavings: 5000,
+        maximumAmountSavingsMultiplier: 0,
         updateAmountSlider: function () {
             this.amountSlider.noUiSlider.set(this.loanAmount);
         },
@@ -47,11 +48,17 @@ function calcData()  {
             this.insuranceCharge = parseInt(selectedLoanProduct.insurance_charge);
             this.processingFee = parseInt(selectedLoanProduct.processing_fee);
             this.membershipFee = parseInt(selectedLoanProduct.membership_fee);
-            shortName = selectedLoanProduct.short_name;
-            this.showSavingsSlider = shortName == 'SGL' ? true : false;     
-            
+            this.maximumAmountSavingsMultiplier = selectedLoanProduct.maximum_amount_savings_multiplier;
+            this.showSavingsSlider = selectedLoanProduct.depends_on_savings;
+            if (selectedLoanProduct.minimum_savings !== null && this.showSavingsSlider) {
+                this.minimumSavings = parseFloat(selectedLoanProduct.minimum_savings);
+            }
+            if (selectedLoanProduct.maximumSavings !== null && this.showSavingsSlider) {
+                this.maximumSavings = parseFloat(selectedLoanProduct.maximum_savings);
+            }
+
             if(this.showSavingsSlider) {
-                maxBasedOnSavings = this.savingsAmount * 3;
+                maxBasedOnSavings = this.savingsAmount * this.maximumAmountSavingsMultiplier;
                 this.maximumAmount = maxBasedOnSavings;
             }
 
@@ -67,7 +74,13 @@ function calcData()  {
                     max: this.maximumTenure
                 },
             });
-           
+            this.savingsSlider.noUiSlider.updateOptions({
+                range: {
+                    min: this.minimumSavings,
+                    max: this.maximumSavings
+                },
+            });
+
         },
         emi(){
           let decimalInterest = this.interestRate/100;
