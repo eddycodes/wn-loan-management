@@ -55,7 +55,7 @@ function data() {
             this.processingFee = parseInt(selectedLoanProduct.processing_fee);
             this.membershipFee = parseInt(selectedLoanProduct.membership_fee);
             this.maximumAmountSavingsMultiplier = selectedLoanProduct.maximum_amount_savings_multiplier;
-            this.showSavingsSlider = selectedLoanProduct.depends_on_savings === 1 ? true : false;
+            this.showSavingsSlider = parseInt(selectedLoanProduct.depends_on_savings) === 1 ? true : false;
             if (selectedLoanProduct.minimum_savings !== null && this.showSavingsSlider) {
                 this.minimumSavings = parseFloat(selectedLoanProduct.minimum_savings);
             }
