@@ -1,6 +1,5 @@
 <div class="apply-form mt-5" x-data="data()" x-init="
     loanProducts = {{__SELF__.loanProducts }};
-    console.log(loanProducts);
     minimumAmount = parseInt(loanProducts[0].minimum_amount);
     maximumAmount = parseInt(loanProducts[0].maximum_amount);
     maximumTenure = parseInt(loanProducts[0].maximum_tenure);
@@ -72,6 +71,12 @@
     tenureSlider.noUiSlider.on('update', (values, handle) => {
         tenure = parseInt(values[handle]);
     });
+
+    savingsSlider.noUiSlider.on('update', (values, handle) => {
+        savingsAmount = parseInt(values[handle]);
+    });
+
+
 ">
     <form data-request="onSubmit">
         {{ form_token() }}
@@ -90,7 +95,7 @@
                 </div>
                 <div class="form-group" x-show="showSavingsSlider">
                     <label for="savingsAmount">Total Savings</label>
-                    <input x-model="savingsAmount" @change="updateSavingAmountSlider" type="text"
+                    <input x-model="savingsAmount" @change="updateSavingsSlider" type="text"
                         :class="{ 'is-invalid': errors.savings_amount }" class="form-control" name="savings_amount"
                         id="savingsAmount" placeholder="Savings Amount">
                     <template x-if="errors.savings_amount">

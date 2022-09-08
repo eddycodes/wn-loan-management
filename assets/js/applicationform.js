@@ -31,6 +31,9 @@ function data() {
         updateTenureSlider: function () {
             this.tenureSlider.noUiSlider.set(this.tenure);
         },
+        updateSavingsSlider: function () {
+            this.savingsSlider.noUiSlider.set(this.savingsAmount);
+        },
         onLoanPurposeChange(e) {
             if (e.target.value === '') {
                 this.showOtherLoanInput = true;
