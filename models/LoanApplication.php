@@ -8,7 +8,7 @@ use Model;
 class LoanApplication extends Model
 {
     use \October\Rain\Database\Traits\Validation;
-    
+
     /*
      * Disable timestamps by default.
      * Remove this line if timestamps are defined in the database table.
@@ -32,23 +32,12 @@ class LoanApplication extends Model
     public $attachOne = [
         'id_document' => 'System\Models\File',
         'proof_of_residence' => 'System\Models\File',
-        
+
     ];
 
     public $belongsTo = [
         'loanProduct' => \ImpulseTechnologies\LoanManagement\Models\LoanProduct::class,
         'loanPurpose' => \ImpulseTechnologies\LoanManagement\Models\LoanPurpose::class
     ];
-        
-
-    public function getMonthlyInstallmentAttribute() {
-        $interestRate =  $this->interest_rate/100;
-        $top = pow((1+$interestRate),$this->tenure);
-        $bottom = $top - 1;
-        $ratio = $top/$bottom;
-        $monthlyInstallment = round(($this->loan_amount * $interestRate * $ratio), 2);
-        return $monthlyInstallment;
-    }
-
 
 }

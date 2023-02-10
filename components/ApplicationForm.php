@@ -12,9 +12,12 @@ use Validator;
 use Log;
 use Mail;
 use Session;
+use ImpulseTechnologies\LoanManagement\Traits\CalculatorUtilities;
 
 class ApplicationForm extends ComponentBase
 {
+    use CalculatorUtilities;
+
     public $loanProducts;
     public $loanPurposes;
     public $loanAmount;
@@ -136,7 +139,7 @@ class ApplicationForm extends ComponentBase
                 'id' => $loanApplication->id,
                 'loan_amount' => $loanApplication->loan_amount,
                 'tenure' => $loanApplication->tenure,
-                'monthly_installment' => $loanApplication->monthly_installment,
+                'monthly_installment' => $this->monthlyInstallment($loanApplication->interest_rate,$loanApplication->loan_amount,$loanApplication->tenure),
                 'interest_rate' => $loanApplication->interest_rate,
                 'first_name' => $loanApplication->first_name,
                 'surname' => $loanApplication->surname,
