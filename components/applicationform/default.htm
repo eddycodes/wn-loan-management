@@ -102,8 +102,7 @@
                             :class="{ 'is-invalid': errors.loan_porduct_id }" class="form-control"
                             @change="onLoanProductChange">
                             {% for loan in __SELF__.loanProducts %}
-                            <option value="{{ loan.id }}">{{ loan.name }} - (Monthly Interest {{ loan.interest_rate }}
-                                %)
+                            <option value="{{ loan.id }}">{{ loan.name }}
                             </option>
                             {% endfor %}
                         </select>
